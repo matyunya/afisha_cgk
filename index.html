@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta property="og:description" content="Все имейте в виду: я был бы плохим капитаном «Что? Где? Когда?»" />
+    <meta property="og:site_name" content="Афиша-Воздух" />
+    <meta property="fb:app_id" content="544418625629794" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:title" content="Что? Где? Когда?" />
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link href="http://vozduh.afisha.ru/assets/css/1f8280b244/c_main.css" rel="stylesheet" type="text/css" media="all" charset="utf-8">
+</head>
+<!-- Посвящается Петруку, главному чгк дв. -->
+<body>
+<div class="page_container">
+ <header class="article_header article_header_wo_image">
+     <p class="article_lead">В 1975 году в эфире Первой программы Центрального телевидения СССР состоялась премьера тогда еще семейной викторины «Что? Где? Когда?». В честь старта юбилейной осенней серии игр «Афиша» предлагает читателям осуществить свою мечту, а именно сесть за стол интеллектуального казино и попробовать себя в роли капитана легендарной передачи. Внимание на экран!</p>
+      <div class="pre">
+        <div class="articles_button-container"><b class="articles_button button-original" id="begin" style="margin-bottom:20px">Начать</b><br></div>
+      </div>
+
+  <div class="page_text_container game_frame hidden">
+    <section class="video_container">
+
+    <h2 class="video_title">Первый раунд</h2>
+    <div id="player" class="hidden"></div>
+    </section>
+    <div class="holder hidden">
+        <div class="hidden" id="result" class="answer"></div>
+
+        <div class="answers hidden">
+          <p class="answer_header">Время! Кто отвечает?</p><br>
+         <span class="answer">
+         <input type="radio" name="answer" value="0" id="answer0" /> <label for="answer0">Илья Новиков: На черепах ставили блюда</label>
+         </span>
+         <span class="answer">
+         <input type="radio" name="answer" value="1" id="answer1" /> <label for="answer1">Алексей Супранович: На черепах ставили пустые бокалы и блюда</label>
+         </span>
+         <span class="answer">
+         <input type="radio" name="answer" value="2" id="answer2" /> <label for="answer2">Елена Орлова: На черепах ставили свечи</label>
+         </span>
+         <span class="answer">
+         <input type="radio" name="answer" value="3" id="answer3" /> <label for="answer3">Илья Новиков: Черепахи носили ноты</label>
+         </span>
+         <span class="answer">
+         <input type="radio" name="answer" value="4" id="answer4" /> <label for="answer4">Елена Орлова: Черепахи переносили записки от человека к человеку</label>
+         </span>
+         <div class="articles_button-container button_no_margin">
+         <b class="articles_button button-original hidden" id="answer">Ответить</b>
+         </div>
+        </div>
+      </div>
+   </div>
+ </header>
+</div>
+
+<style>
+.hidden {
+  display: none;
+}
+.pre {
+  text-align: center;
+}
+.answers, #result {
+  text-align: left;
+  padding: 30px;
+  padding-bottom: 0;
+}
+#result {
+  padding-top: 0;
+}
+.holder {
+  min-height: 100px;
+  padding-bottom: 50px;
+}
+.video_title {
+  padding: 20px;
+}
+
+.answer_header, .video_title {
+  font-size: 28px;
+  font-weight: bold;
+  text-align: center;
+}
+.answers, {
+  padding: 30px;
+}
+#next_question {
+  margin-bottom: 30px;
+}
+.answer {
+  line-height: 40px;
+  display: block;
+}
+.game_frame {
+  background-color: white;
+  border: 2px solid #089;
+}
+.button_no_margin {
+  margin-top: 15px;
+}
+</style>
+
+<script>
+  var tag = document.createElement('script');
+  var player;
+  var score = 0;
+  var current = 0;
+
+  var replies = {
+    0: {
+      right: 'При дворе султана дрессированных черепах использовали в качестве движущейся иллюминации. Им на панцири крепили свечи. Отличное начало игры!',
+      wrong: 'Нужно было прислушаться к Елене Орловой, ее версия была правильной. При дворе султана дрессированных черепах использовали в качестве движущейся иллюминации. Им на панцири крепили свечи. Будьте внимательны.'},
+    1: {
+      right: 'Вы не поверили Борису Бурде и оказались правы! Скрываясь от боярского гнева в Александровой слободе в течение всего нескольких дней почти облысел от страха за свою жизнь Иван Грозный. Идем дальше!',
+      wrong: 'Скрываясь от боярского гнева в Александровой слободе в течение всего нескольких дней почти облысел от страха за свою жизнь Иван Грозный. Ошибиться на этом вопросе не так обидно: в верный ответ не поверил сам Борис Бурда.'
+    },
+    2: {
+      right: 'Вы все правильно поняли: чайник — для горячего чая, а этот сосуд — квасник — для холодных напитков. В это отверстие помещают мешочек со льдом, и напиток охлаждается. Впереди еще четыре вопроса, так держать!',
+      wrong: 'К сожалению, вы выбрали неверный вариант. Чайник — для горячего чая, а этот сосуд — квасник — для холодных напитков. В это отверстие помещают мешочек со льдом, и напиток охлаждается. Соберитесь, осталось четыре вопроса.'
+    },
+    3: {
+      right: 'Вы справились с непредсказуемым 13-м сектором! Благо, вопрос попался несложный: телезритель, действительно, имел в виду картину «Иван Грозный убивает своего сына».',
+      wrong: 'Телезритель имел в виду картину «Иван Грозный убивает своего сына». Непредсказуемый 13-й сектор сыграл свою злую шутку.'
+    },
+    4: {
+      right: 'К сожалению, иногда все игроки ошибаются, и за столом, как сейчас, не появляется правильная версия. Говоря о плоскости, Дега, конечно, хвалил Толстого: он сравнивал его произведения с шедеврами живописи. Вся команда ответила неверно, идем дальше, осталось немного.',
+      wrong: 'К сожалению, иногда все игроки ошибаются, и за столом, как сейчас, не появляется правильная версия. Говоря о плоскости, Дега, конечно, хвалил Толстого: он сравнивал его произведения с шедеврами живописи. Вся команда ответила неверно, идем дальше, осталось немного.'
+    },
+    5: {
+      right: 'В сумке — ключи от дома, дачи, машины, паспорт, кошелек и все остальное. Вы оказались правы, доверив ответ Елене Орловой.',
+      wrong: 'Модельер имел в виду женскую сумочку, в ней — ключи от дома, дачи, машины, паспорт, кошелек и все остальное. Нужно было довериться Елене Орловой.'
+    },
+    6: {
+      right: 'Как выяснили британские ученые, вкус сыра зависит от запаха. Его концентрация растет с увеличением толщины сыра на бутерброде. Но когда концентрация достигает предельного уровня, она больше не повышается и на вкус сыра не влияет.',
+      wrong: 'Как выяснили британские ученые, вкус сыра зависит от запаха. Его концентрация растет с увеличением толщины сыра на бутерброде. Но когда концентрация достигает предельного уровня, она больше не повышается и на вкус сыра не влияет. Так что прибор измеряет силу сырного запаха. Возможно, вы давно не ели сыра, поэтому ответили неверно.'
+    }
+  }
+
+  var video_titles = ['Первый', 'Второй', 'Третий', 'Четвертый', 'Пятый', 'Шестой', 'Седьмой'];
+
+  var questions = {
+    1 : {videoId : '1kG1A78Y8_Y', startSeconds : 1693, endSeconds : 1784, //1693—1784 1kG1A78Y8_Y
+      answers : 
+      [
+        'Анатолий Вассерман: Это был Иван Грозный',
+        'Татьяна Богатырева: Это был не человек',
+        'Роман Морозовский: Это был Димитрий',
+        'Татьяна Богатырева: Это был Меншиков',
+      ]},
+    2 : {videoId : 'nSEznauwLqI', startSeconds : 1264, endSeconds : 1352, //1263—1352 nSEznauwLqI
+      answers : 
+      [
+        'Борис Бурда: В отверстие в сосуде вешали калач или сушки',
+        'Игорь Кондратюк: Отверстие нужно для того, чтобы нагретый чай дольше сохранял температуру',
+        'Игорь Кондратюк: Отверстие использовали как сушку, чтобы через нее с посуды стекала вода',
+        'Владимир Молчанов: Отверстие использовали для охлаждения того, что находится в сосуде',
+        'Алексей Капустин: Отверстие нужно, чтобы видеть собеседника за столом'
+      ]},
+    3 : {videoId:'-O5Yeoe6LgI', startSeconds : 674, endSeconds : 800, //672—800
+      answers :
+      [
+        'Евгений Емельянов: Речь о театре',
+        'Леонид Тимофеев: Речь о картинной галерее и «Иване Грозном, убивающем своего сына»',
+        'Борис Левин: Речь о шахматах',
+        'Ответить свою версию (капитана Михаила Смирнова): Речь о музее восковых фигур'
+      ]},
+    4 : {videoId : 'sX2XkzG_y0M', startSeconds : 2847, endSeconds : 2947, //2847-2947
+      answers : 
+      [
+        'Александр Друзь: Потому что произведения Толстого нельзя было нарисовать объемно',
+        'Георгий Жарков: Потому что в произведениях Толстого мало цвета',
+        'Максим Поташев: Потому что произведения Толстого большие как плоскость',
+        'Федор Двинятин: Потому что в произведениях Толстого есть глубина, которую невозможно нарисовать',
+      ]},
+    5 : {videoId : '0GIberWECQU', startSeconds : 963, endSeconds : 1061, //963—1061
+      answers : 
+      [
+        'Елена Орлова: В черном ящике — женская сумочка',
+        'Владимир Белкин: В черном ящике — игла', 
+        'Илья Новиков: В черном ящике — рубашка',
+        'Равшан Аскеров: В черном ящике — вешалка',
+        'Владимир Белкин: В черном ящике — кусок материи',
+        'Илья Новиков: В черном ящике — обувь'
+      ]},
+    6 : {videoId : 'h4JuiE83CNs', startSeconds : 390, endSeconds : 507, // 390—507
+      answers : 
+      [
+        'Инна Друзь: Прибором измеряется объем дырок в сыре',
+        'Илья Новиков: Прибором измеряется диаметр дырок в сыре',
+        'Инна Друзь: Прибором измеряется жесткость сыра',
+        'Господин Левандовский: Прибором измеряется запах сыра',
+        'Петр Сукачев: Прибором измеряется прогиб сыра',
+        'Илья Новиков: Прибором измеряется упругость сыра',
+        'Господин Левандовский: Прибором измеряется влажность сыра',
+        'Инна Друзь: Прибором измеряется вес сыра'
+      ]},
+    };
+
+  tag.src = "https://www.youtube.com/iframe_api";
+  var firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+      videoId: 'o-GZZlNhtDE',
+      playerVars: {'controls': 0, 'showinfo' : 0 , 'rel' : 0, 'disablekb' : 1, 'modestbranding' : 1, 'hl' : 'ru', 'start': 2092, 'end': 2095}, //2222
+      events: {
+        'onStateChange': onPlayerStateChange,
+        'onReady': onPlayerReady
+      }
+    });
+  }
+
+  function onPlayerReady(event) {
+    if (current > 0) {
+      event.target.playVideo();
+    } 
+  }  
+
+function onPlayerStateChange(event) {
+  if (event.data == YT.PlayerState.ENDED) {
+
+    $('#result, .answers').toggleClass('hidden');
+    $(".video_container, .holder, #player, .video_title, #result").toggleClass("hidden");
+    showAnswerButton();
+
+    if (current > 0) {
+       $('.answers').removeClass('hidden');
+       $('#result').addClass('hidden');
+    }
+  }
+}
+
+function loadVideo(question) {
+  player.loadVideoById({
+           'videoId': question.videoId,
+           'startSeconds': question.startSeconds,
+           'endSeconds': question.endSeconds
+         });
+}
+
+function setNextQuestion(answers) {
+  var i;
+  for (i = 0; i < answers.length; i++) {
+    if ($("label[for='answer" + i + "']").length) {
+        $("label[for='answer" + i + "']").text(answers[i]);
+    } else {
+        $(".answer:last").after('<span class="answer">' +
+     '<input type="radio" name="answer" value="' + i + '" id="answer' + i + '" /> <label for="answer' + i + '">' + answers[i] + '</label></span>' );
+    }
+  }
+
+  while($("label[for='answer" + i + "']").length) {
+    $("label[for='answer" + i + "'], #answer" + i).remove();
+    ++i;
+  }
+
+  $(".answers input:checked").prop('checked', false);
+}
+
+function setVideoTitle() {
+  $(".video_title").toggleClass('hidden').html(video_titles[current] + ' раунд');
+
+  if (current === 4) {
+    $(".video_title").append('. Сектор «Зеро»');
+  }
+}
+
+function showAnswerButton() {
+  $('input[name=answer]').on("click", function() {
+    $('#answer').removeClass("hidden");
+  });
+}
+
+function showResult(score, brief) {
+  switch (score) {
+    case 0:
+    case 1:
+    case 2:
+      if (brief) return 'Все имейте в виду: я был бы плохим капитаном «Что? Где? Когда?»';
+      return '<h2 class="video_title">Вы были бы плохим капитаном «Что? Где? Когда?»</h2>Даже в окружении умных людей, предлагающих верные варианты ответов, вы постоянно выбирали не те. Ваша команда проиграла, а вас не получилось стать хорошим капитаном «Что? Где? Когда?». Возможно, вам, как Анатолию Вассерману, больше подойдет «Своя игра», где есть только вы в серой мантии и никто вокруг не орет.';
+    case 3:
+    case 4:
+      if (brief) return 'Еще не все потеряно: я был бы неплохим капитаном «Что? Где? Когда?»';
+      return '<h2 class="video_title">Вы были бы неплохим капитаном «Что? Где? Когда?»</h2>Нужно отдать вам должное, вы были бы неплохим капитаном «Что? Где? Когда?». Возможно, вам помогла собственная эрудиция, а, возможно, и интуиция. «Хороший капитан быстро анализирует текст вопроса, у него развиты интуиция и самообладание, он способен сконцентрироваться на игре и привести команду к победе», — считает капитан ЧГК Елена Потанина. Решайте, чего именно вам не хватило.';
+    case 5:
+    case 6:
+    case 7:
+      if (brief) return 'Я был бы отличным капитаном «Что? Где? Когда?»';
+      return '<h2 class="video_title">Вы были бы отличным капитаном «Что? Где? Когда?»</h2>Браво, вы были бы отличным капитаном «Что? Где? Когда?»: у вас получилось слышать, что говорят игроки, и выбирать верные версии. Если вы тайно мечтаете о «Хрустальной сове», соберите команду. Вот совет от капитана ЧГК Елены Потаниной: «Хороший капитан способен справиться с собственным волнением и помогает команде сделать то же самое. Он грамотно руководит обсуждением, заставляет команду не только генерировать версии, но и развивать их, а также поддерживать или критиковать. Он также умеет четко формулировать мысли и красиво их излагать, концентрироваться на игре и тем самым приводить команду к победе».';
+    default:
+      return false;
+  }
+}
+
+function isCorrect(counter, answer) {
+  switch (counter) {
+    case 0: return (answer === 2);
+    case 1: return (answer === 0);
+    case 2: return (answer === 3);
+    case 3: return (answer === 1);
+    case 4: return (answer === 9);
+    case 5: return (answer === 0);
+    case 6: return (answer === 3);
+    default: return false;
+  }
+}
+
+
+$(document).ready(function() {
+  $("#begin").on("click", function() {
+    $(".pre, #player, .article_lead, .title, .game_frame, #article_text").toggleClass("hidden");
+  });
+
+  showAnswerButton();
+
+  $("#answer").on("click", function() {
+    $('.answers').toggleClass('hidden');
+    answer = parseInt($('input[name=answer]:checked').val());
+
+    if (isCorrect(current, answer)) {
+      score++;
+      $("#result").html('<h2 class="video_title">Верно!</h2>' + replies[current].right);
+    } else {
+      $("#result").html('<h2 class="video_title">Неверно!</h2>' + replies[current].wrong);
+    }
+
+    if (current < 0) {
+      $("#result").append('<div class="articles_button-container next_question_container"><b class="articles_button button-original" id="next_question">Следующий вопрос</b> </div></div>');
+    } else {
+      $("#result").append('<div class="articles_button-container next_question_container"><b class="articles_button button-original" id="next_question">Узнать результат игры</b> </div></div>');
+    }
+
+    $("#answer, #result").toggleClass('hidden');
+
+    $('#next_question').on("click", function() {
+      current++;
+      if (current > 0) {
+        $("#player").addClass("hidden");
+        $('meta[property="og:description"]').attr(showResult(score, true));
+        $("#result")
+          .html(showResult(score, false))
+          .append('<br><div style="font-weight:bold; margin: auto; width: 300px; margin-top:30px;">Поделиться результатом игры:</div><div style="width:150px;margin:auto;">'
+             + '<br><a style="margin-top:7px;margin-bottom:7px;" href="https://twitter.com/share" class="twitter-share-button" data-text="'
+             + showResult(score, true)
+             + '" data-lang="ru">Твитнуть</a><div style="margin-top:7px;margin-bottom:7px;">'
+             + VK.Share.button({url: "http://vozduh.afisha.ru/art/chto-gde-kogda/?description= " + showResult(score, true)},
+                               {text: 'Поделиться', type: 'button'}) 
+             + '</div></div>'
+             );
+
+          !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+        return;
+      }
+
+      loadVideo(questions[current]);
+      setNextQuestion(questions[current].answers);
+      setVideoTitle();
+
+      $(".video_title").toggleClass("hidden");
+    });
+  });
+});
+</script>
+<script type="text/javascript" src="http://vk.com/js/api/share.js?90" charset="windows-1251"></script>
+</body>
+</html>
